@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStepData,3,0,0,0,2,0,1,0,1,0
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStepDialog.new SelectionAdapter() {...},10,0,0,0,2,0,2,0,2,0
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStepMeta,125,30,2,0,30,11,11,5,10,5
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStepDialog.new Listener() {...},10,0,0,0,2,0,2,0,2,0
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStepDialog.new Listener() {...},10,0,0,0,2,0,2,0,2,0
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStepDialog,442,0,4,0,83,0,8,0,6,0
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStepDialog.new ModifyListener() {...},11,0,0,0,3,0,2,0,2,0
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStep,99,0,6,0,24,0,7,0,4,0
+kettle-sdk-step-plugin,org.pentaho.di.sdk.samples.steps.demo,DemoStepDialog.new ShellAdapter() {...},10,0,0,0,2,0,2,0,2,0

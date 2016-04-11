@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DemoStepDialog.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">kettle-sdk-step-plugin</a> &gt; <a href="index.source.html" class="el_package">org.pentaho.di.sdk.samples.steps.demo</a> &gt; <span class="el_source">DemoStepDialog.java</span></div><h1>DemoStepDialog.java</h1><pre class="source lang-java linenums">/*! ******************************************************************************
+*
+* Pentaho Data Integration
+*
+* Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+*
+*******************************************************************************
+*
+* Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+* you may not use this file except in compliance with
+* the License. You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*
+******************************************************************************/
+
+package org.pentaho.di.sdk.samples.steps.demo;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDialogInterface;
+
+/**
+ * This class is part of the demo step plug-in implementation.
+ * It demonstrates the basics of developing a plug-in step for PDI. 
+ * 
+ * The demo step adds a new string field to the row stream and sets its
+ * value to &quot;Hello World!&quot;. The user may select the name of the new field.
+ *   
+ * This class is the implementation of StepDialogInterface.
+ * Classes implementing this interface need to:
+ * 
+ * - build and open a SWT dialog displaying the step's settings (stored in the step's meta object)
+ * - write back any changes the user makes to the step's meta object
+ * - report whether the user changed any settings when confirming the dialog 
+ * 
+ */
+public class DemoStepDialog extends BaseStepDialog implements StepDialogInterface {
+
+	/**
+	 *	The PKG member is used when looking up internationalized strings.
+	 *	The properties file with localized keys is expected to reside in 
+	 *	{the package of the class specified}/messages/messages_{locale}.properties   
+	 */
+<span class="nc" id="L71">	private static Class&lt;?&gt; PKG = DemoStepMeta.class; // for i18n purposes</span>
+
+	// this is the object the stores the step's settings
+	// the dialog reads the settings from it when opening
+	// the dialog writes the settings to it when confirmed 
+	private DemoStepMeta meta;
+
+	// text field holding the name of the field to add to the row stream
+	private Text wHelloFieldName;
+
+	/**
+	 * The constructor should simply invoke super() and save the incoming meta
+	 * object to a local variable, so it can conveniently read and write settings
+	 * from/to it.
+	 * 
+	 * @param parent 	the SWT shell to open the dialog in
+	 * @param in		the meta object holding the step's settings
+	 * @param transMeta	transformation description
+	 * @param sname		the step name
+	 */
+	public DemoStepDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
+<span class="nc" id="L92">		super(parent, (BaseStepMeta) in, transMeta, sname);</span>
+<span class="nc" id="L93">		meta = (DemoStepMeta) in;</span>
+<span class="nc" id="L94">	}</span>
+
+	/**
+	 * This method is called by Spoon when the user opens the settings dialog of the step.
+	 * It should open the dialog and return only once the dialog has been closed by the user.
+	 * 
+	 * If the user confirms the dialog, the meta object (passed in the constructor) must
+	 * be updated to reflect the new step settings. The changed flag of the meta object must 
+	 * reflect whether the step configuration was changed by the dialog.
+	 * 
+	 * If the user cancels the dialog, the meta object must not be updated, and its changed flag
+	 * must remain unaltered.
+	 * 
+	 * The open() method must return the name of the step after the user has confirmed the dialog,
+	 * or null if the user cancelled the dialog.
+	 */
+	public String open() {
+
+		// store some convenient SWT variables 
+<span class="nc" id="L113">		Shell parent = getParent();</span>
+<span class="nc" id="L114">		Display display = parent.getDisplay();</span>
+
+		// SWT code for preparing the dialog
+<span class="nc" id="L117">		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);</span>
+<span class="nc" id="L118">		props.setLook(shell);</span>
+<span class="nc" id="L119">		setShellImage(shell, meta);</span>
+		
+		// Save the value of the changed flag on the meta object. If the user cancels
+		// the dialog, it will be restored to this saved value.
+		// The &quot;changed&quot; variable is inherited from BaseStepDialog
+<span class="nc" id="L124">		changed = meta.hasChanged();</span>
+		
+		// The ModifyListener used on all controls. It will update the meta object to 
+		// indicate that changes are being made.
+<span class="nc" id="L128">		ModifyListener lsMod = new ModifyListener() {</span>
+			public void modifyText(ModifyEvent e) {
+<span class="nc" id="L130">				meta.setChanged();</span>
+<span class="nc" id="L131">			}</span>
+		};
+		
+		// ------------------------------------------------------- //
+		// SWT code for building the actual settings dialog        //
+		// ------------------------------------------------------- //
+<span class="nc" id="L137">		FormLayout formLayout = new FormLayout();</span>
+<span class="nc" id="L138">		formLayout.marginWidth = Const.FORM_MARGIN;</span>
+<span class="nc" id="L139">		formLayout.marginHeight = Const.FORM_MARGIN;</span>
+
+<span class="nc" id="L141">		shell.setLayout(formLayout);</span>
+<span class="nc" id="L142">		shell.setText(BaseMessages.getString(PKG, &quot;Demo.Shell.Title&quot;)); </span>
+
+<span class="nc" id="L144">		int middle = props.getMiddlePct();</span>
+<span class="nc" id="L145">		int margin = Const.MARGIN;</span>
+
+		// Stepname line
+<span class="nc" id="L148">		wlStepname = new Label(shell, SWT.RIGHT);</span>
+<span class="nc" id="L149">		wlStepname.setText(BaseMessages.getString(PKG, &quot;System.Label.StepName&quot;)); </span>
+<span class="nc" id="L150">		props.setLook(wlStepname);</span>
+<span class="nc" id="L151">		fdlStepname = new FormData();</span>
+<span class="nc" id="L152">		fdlStepname.left = new FormAttachment(0, 0);</span>
+<span class="nc" id="L153">		fdlStepname.right = new FormAttachment(middle, -margin);</span>
+<span class="nc" id="L154">		fdlStepname.top = new FormAttachment(0, margin);</span>
+<span class="nc" id="L155">		wlStepname.setLayoutData(fdlStepname);</span>
+		
+<span class="nc" id="L157">		wStepname = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);</span>
+<span class="nc" id="L158">		wStepname.setText(stepname);</span>
+<span class="nc" id="L159">		props.setLook(wStepname);</span>
+<span class="nc" id="L160">		wStepname.addModifyListener(lsMod);</span>
+<span class="nc" id="L161">		fdStepname = new FormData();</span>
+<span class="nc" id="L162">		fdStepname.left = new FormAttachment(middle, 0);</span>
+<span class="nc" id="L163">		fdStepname.top = new FormAttachment(0, margin);</span>
+<span class="nc" id="L164">		fdStepname.right = new FormAttachment(100, 0);</span>
+<span class="nc" id="L165">		wStepname.setLayoutData(fdStepname);</span>
+
+		// output field value
+<span class="nc" id="L168">		Label wlValName = new Label(shell, SWT.RIGHT);</span>
+<span class="nc" id="L169">		wlValName.setText(BaseMessages.getString(PKG, &quot;Demo.FieldName.Label&quot;)); </span>
+<span class="nc" id="L170">		props.setLook(wlValName);</span>
+<span class="nc" id="L171">		FormData fdlValName = new FormData();</span>
+<span class="nc" id="L172">		fdlValName.left = new FormAttachment(0, 0);</span>
+<span class="nc" id="L173">		fdlValName.right = new FormAttachment(middle, -margin);</span>
+<span class="nc" id="L174">		fdlValName.top = new FormAttachment(wStepname, margin);</span>
+<span class="nc" id="L175">		wlValName.setLayoutData(fdlValName);</span>
+
+<span class="nc" id="L177">		wHelloFieldName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);</span>
+<span class="nc" id="L178">		props.setLook(wHelloFieldName);</span>
+<span class="nc" id="L179">		wHelloFieldName.addModifyListener(lsMod);</span>
+<span class="nc" id="L180">		FormData fdValName = new FormData();</span>
+<span class="nc" id="L181">		fdValName.left = new FormAttachment(middle, 0);</span>
+<span class="nc" id="L182">		fdValName.right = new FormAttachment(100, 0);</span>
+<span class="nc" id="L183">		fdValName.top = new FormAttachment(wStepname, margin);</span>
+<span class="nc" id="L184">		wHelloFieldName.setLayoutData(fdValName);</span>
+		      
+		// OK and cancel buttons
+<span class="nc" id="L187">		wOK = new Button(shell, SWT.PUSH);</span>
+<span class="nc" id="L188">		wOK.setText(BaseMessages.getString(PKG, &quot;System.Button.OK&quot;)); </span>
+<span class="nc" id="L189">		wCancel = new Button(shell, SWT.PUSH);</span>
+<span class="nc" id="L190">		wCancel.setText(BaseMessages.getString(PKG, &quot;System.Button.Cancel&quot;)); </span>
+
+<span class="nc" id="L192">		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wHelloFieldName);</span>
+
+		// Add listeners for cancel and OK
+<span class="nc" id="L195">		lsCancel = new Listener() {</span>
+<span class="nc" id="L196">			public void handleEvent(Event e) {cancel();}</span>
+		};
+<span class="nc" id="L198">		lsOK = new Listener() {</span>
+<span class="nc" id="L199">			public void handleEvent(Event e) {ok();}</span>
+		};
+
+<span class="nc" id="L202">		wCancel.addListener(SWT.Selection, lsCancel);</span>
+<span class="nc" id="L203">		wOK.addListener(SWT.Selection, lsOK);</span>
+
+		// default listener (for hitting &quot;enter&quot;)
+<span class="nc" id="L206">		lsDef = new SelectionAdapter() {</span>
+<span class="nc" id="L207">			public void widgetDefaultSelected(SelectionEvent e) {ok();}</span>
+		};
+<span class="nc" id="L209">		wStepname.addSelectionListener(lsDef);</span>
+<span class="nc" id="L210">		wHelloFieldName.addSelectionListener(lsDef);</span>
+
+		// Detect X or ALT-F4 or something that kills this window and cancel the dialog properly
+<span class="nc" id="L213">		shell.addShellListener(new ShellAdapter() {</span>
+<span class="nc" id="L214">			public void shellClosed(ShellEvent e) {cancel();}</span>
+		});
+		
+		// Set/Restore the dialog size based on last position on screen
+		// The setSize() method is inherited from BaseStepDialog
+<span class="nc" id="L219">		setSize();</span>
+
+		// populate the dialog with the values from the meta object
+<span class="nc" id="L222">		populateDialog();</span>
+		
+		// restore the changed flag to original value, as the modify listeners fire during dialog population 
+<span class="nc" id="L225">		meta.setChanged(changed);</span>
+
+		// open dialog and enter event loop 
+<span class="nc" id="L228">		shell.open();</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">		while (!shell.isDisposed()) {</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">			if (!display.readAndDispatch())</span>
+<span class="nc" id="L231">				display.sleep();</span>
+		}
+
+		// at this point the dialog has closed, so either ok() or cancel() have been executed
+		// The &quot;stepname&quot; variable is inherited from BaseStepDialog
+<span class="nc" id="L236">		return stepname;</span>
+	}
+	
+	/**
+	 * This helper method puts the step configuration stored in the meta object
+	 * and puts it into the dialog controls.
+	 */
+	private void populateDialog() {
+<span class="nc" id="L244">		wStepname.selectAll();</span>
+<span class="nc" id="L245">		wHelloFieldName.setText(meta.getOutputField());	</span>
+<span class="nc" id="L246">	}</span>
+
+	/**
+	 * Called when the user cancels the dialog.  
+	 */
+	private void cancel() {
+		// The &quot;stepname&quot; variable will be the return value for the open() method. 
+		// Setting to null to indicate that dialog was cancelled.
+<span class="nc" id="L254">		stepname = null;</span>
+		// Restoring original &quot;changed&quot; flag on the met aobject
+<span class="nc" id="L256">		meta.setChanged(changed);</span>
+		// close the SWT dialog window
+<span class="nc" id="L258">		dispose();</span>
+<span class="nc" id="L259">	}</span>
+	
+	/**
+	 * Called when the user confirms the dialog
+	 */
+	private void ok() {
+		// The &quot;stepname&quot; variable will be the return value for the open() method. 
+		// Setting to step name from the dialog control
+<span class="nc" id="L267">		stepname = wStepname.getText(); </span>
+		// Setting the  settings to the meta object
+<span class="nc" id="L269">		meta.setOutputField(wHelloFieldName.getText());</span>
+		// close the SWT dialog window
+<span class="nc" id="L271">		dispose();</span>
+<span class="nc" id="L272">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
