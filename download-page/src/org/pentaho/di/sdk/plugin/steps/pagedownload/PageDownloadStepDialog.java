@@ -23,10 +23,12 @@
 package org.pentaho.di.sdk.plugin.steps.pagedownload;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -40,8 +42,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.LabelComboVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -79,6 +85,10 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 	private Text outputFieldName;
 	
 	private Text urlFieldName;
+	
+	private Button bUrlInputField;
+	
+	private String[] fieldNames;
 
 	/**
 	 * The constructor should simply invoke super() and save the incoming meta
@@ -203,6 +213,59 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		urlfdValName.right = new FormAttachment(100, 0);
 		urlfdValName.top = new FormAttachment(outputFieldName, margin);
 		urlFieldName.setLayoutData(urlfdValName);
+		
+		//Checkbox
+		Label lUrlInputField = new Label(shell, SWT.RIGHT);
+		lUrlInputField.setText(BaseMessages.getString(PKG, "PageDownloadStep.InputFields.Label")); 
+		props.setLook(lUrlInputField);
+		FormData fdUrlInputField = new FormData();
+		urlFormDataValName.left = new FormAttachment(0, 0);
+		urlFormDataValName.right = new FormAttachment(middle, -margin);
+		urlFormDataValName.top = new FormAttachment(urlFieldName, margin);
+		lUrlInputField.setLayoutData(urlFormDataValName);
+		
+		bUrlInputField = new Button(shell, SWT.CHECK | SWT.LEFT);
+		props.setLook(bUrlInputField);
+		//bUrlInputField.addSelectionListener(lsMod);
+		FormData fdbUrlInputField = new FormData();
+		fdbUrlInputField.left = new FormAttachment(middle, 0);
+		fdbUrlInputField.right = new FormAttachment(100, 0);
+		fdbUrlInputField.top = new FormAttachment(urlFieldName, margin);
+		bUrlInputField.setLayoutData(fdbUrlInputField);
+		
+		// Checkbox
+//		Label prevStep = new Label(shell, SWT.RIGHT);
+//		prevStep.setText(BaseMessages.getString(PKG, "PageDownloadStep.PrevStep.Label"));
+//		
+//		final Button prevCheckboxStep = new Button( shell, SWT.CHECK | SWT.RIGHT );
+//		prevCheckboxStep.setToolTipText( BaseMessages.getString( PKG, "PageDownloadStep.PrevStep.Tooltip" ) );
+//
+//		final LabelComboVar selectInputField = new LabelComboVar( transMeta, shell,
+//		        BaseMessages.getString( PKG, "PageDownloadStep.InputFields.Label" ),
+//		        BaseMessages.getString( PKG, "PageDownloadStep.InputFields.Tooltip" ) );
+//		selectInputField.getComboWidget().setEditable( true );
+//		props.setLook( selectInputField );
+//		selectInputField.addModifyListener( lsMod );
+//		selectInputField.addFocusListener( new FocusListener() {
+//		public void focusLost( org.eclipse.swt.events.FocusEvent e ) {}
+//
+//		public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
+//			getPreviousFields( selectInputField );
+//		}
+//		});
+//	    getPreviousFields( selectInputField );
+//	    selectInputField.setEnabled( prevCheckboxStep.getSelection() );
+//		
+//		prevCheckboxStep.addSelectionListener(new SelectionListener() {
+//			
+//			public void widgetSelected(SelectionEvent arg0) {
+//				selectInputField.setEnabled(prevCheckboxStep.getSelection());
+//			}
+//			
+//			public void widgetDefaultSelected(SelectionEvent arg0) {
+//				widgetSelected(arg0);
+//			}
+//		});
 		      
 		// OK and cancel buttons
 		wOK = new Button(shell, SWT.PUSH);
@@ -210,7 +273,7 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); 
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, urlFieldName);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, bUrlInputField);
 
 		// Add listeners for cancel and OK
 		lsCancel = new Listener() {
@@ -268,6 +331,33 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		urlFieldName.setText(meta.getUrlField());
 	}
 
+	private void getPreviousFields( LabelComboVar combo ) {
+	    String value = combo.getText();
+	    combo.removeAll();
+	    combo.setItems( getInputFieldNames() );
+	    if ( value != null ) {
+	      combo.setText( value );
+	    }
+	  }
+
+	private String[] getInputFieldNames() {
+	    if ( this.fieldNames == null ) {
+	      try {
+	        RowMetaInterface r = transMeta.getPrevStepFields( stepname );
+	        if ( r != null ) {
+	          fieldNames = r.getFieldNames();
+	        }
+	      } catch ( KettleException ke ) {
+	        new ErrorDialog( shell,
+	          BaseMessages.getString( PKG, "PageDownloadStep.FailedToGetFields.DialogTitle" ),
+	          BaseMessages.getString( PKG, "PageDownloadStep.FailedToGetFields.DialogMessage" ), ke );
+	        return new String[0];
+	      }
+	    }
+
+	    return fieldNames;
+	  }
+	
 	/**
 	 * Called when the user cancels the dialog.  
 	 */

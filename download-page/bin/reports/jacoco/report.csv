@@ -1,10 +1,10 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStep,187,0,8,0,39,0,9,0,5,0
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new ShellAdapter() {...},10,0,0,0,2,0,2,0,2,0
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepMeta,159,36,2,0,36,13,13,5,12,5
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepData,3,0,0,0,2,0,1,0,1,0
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new Listener() {...},10,0,0,0,2,0,2,0,2,0
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new SelectionAdapter() {...},10,0,0,0,2,0,2,0,2,0
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new ModifyListener() {...},11,0,0,0,3,0,2,0,2,0
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new Listener() {...},10,0,0,0,2,0,2,0,2,0
-kettle-sdk-step-plugin,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog,554,0,4,0,102,0,8,0,6,0
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStep,187,0,8,0,39,0,9,0,5,0
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new ShellAdapter() {...},10,0,0,0,2,0,2,0,2,0
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepMeta,159,36,2,0,36,13,13,5,12,5
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepData,3,0,0,0,2,0,1,0,1,0
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new Listener() {...},10,0,0,0,2,0,2,0,2,0
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new SelectionAdapter() {...},10,0,0,0,2,0,2,0,2,0
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new ModifyListener() {...},11,0,0,0,3,0,2,0,2,0
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog.new Listener() {...},10,0,0,0,2,0,2,0,2,0
+page-download,org.pentaho.di.sdk.plugin.steps.pagedownload,PageDownloadStepDialog,700,0,10,0,134,0,13,0,8,0
