@@ -92,6 +92,7 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 	 */
 	private String outputField = "";
 	private String urlField = "";
+	private boolean getUrlFromPreviousFields = false;
 
 	/**
 	 * Constructor should call super() to make sure the base class has a chance to initialize properly.
@@ -167,6 +168,15 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 	public void setUrlField(String urlField) {
 		this.urlField = urlField;		
 	}
+	
+	public void setGetUrlFromPreviousFields(boolean value) {
+		this.getUrlFromPreviousFields = value;
+	}
+	
+	public boolean getGetUrlFromPreviousFields() {
+		return getUrlFromPreviousFields;
+	}
+	
 	/**
 	 * This method is used when a step is duplicated in Spoon. It needs to return a deep copy of this
 	 * step meta object. Be sure to create proper deep copies if the step configuration is stored in
@@ -194,7 +204,8 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append(XMLHandler.addTagValue("outputfield", outputField) + "\n");
-		sb.append(XMLHandler.addTagValue("pageURL", urlField));
+		sb.append(XMLHandler.addTagValue("pageURL", urlField) + "\n");
+		sb.append(XMLHandler.addTagValue("getUrlFromPreviousFields", getUrlFromPreviousFields) + "\n");
 		return sb.toString();
 	}
 
@@ -213,6 +224,13 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 		try {
 			setOutputField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "outputfield")));
 			setUrlField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "pageUrl")));
+			
+			if ( XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "getUrlFromPreviousFields")).equals("Y") ) {
+				setGetUrlFromPreviousFields(true);
+			} else {
+				setGetUrlFromPreviousFields(false);
+			}
+			
 		} catch (Exception e) {
 			throw new KettleXMLException("Demo plugin unable to read step info from XML node", e);
 		}
