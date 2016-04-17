@@ -215,8 +215,8 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		props.setLook(outputFieldName);
 		outputFieldName.addModifyListener(lsMod);
 		FormData fdValName = new FormData();
-		fdValName.left = new FormAttachment(0, 0);
-		fdValName.right = new FormAttachment(middle, -margin);
+		fdValName.left = new FormAttachment(middle, 0);
+		fdValName.right = new FormAttachment(100, 0);
 		fdValName.top = new FormAttachment(wStepname, margin);
 		outputFieldName.setLayoutData(fdValName);
 		
@@ -225,7 +225,7 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		urlFieldName.addModifyListener( lsMod );
 		props.setLook(urlFieldName);
 		FormData urlfdValName = new FormData();
-		urlfdValName.left = new FormAttachment(middle, 0);
+		urlfdValName.left = new FormAttachment(0, 0);
 		urlfdValName.right = new FormAttachment(100, 0);
 		urlfdValName.top = new FormAttachment(outputFieldName, margin);
 		urlFieldName.setLayoutData(urlfdValName);

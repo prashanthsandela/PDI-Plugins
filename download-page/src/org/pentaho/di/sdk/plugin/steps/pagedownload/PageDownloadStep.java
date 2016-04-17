@@ -158,19 +158,17 @@ public class PageDownloadStep extends BaseStep implements StepInterface {
 		Object[] outputRow;
 		String pageContent = "";
 		if(!meta.getGetUrlFromPreviousFields()) {
-			pageContent = downloadPageContent(meta.getUrlField());
-			outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 2, meta.getUrlField());
+			pageContent = downloadPageContent(environmentSubstitute(meta.getUrlField()));
+			outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 2, environmentSubstitute(meta.getUrlField()));
 		} else {
-			pageContent = downloadPageContent(r[urlFieldIdx].toString());
-			outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 2, r[urlFieldIdx].toString());
+			pageContent = downloadPageContent(environmentSubstitute(r[urlFieldIdx].toString()));
+			outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 2, environmentSubstitute(r[urlFieldIdx].toString()));
 		}
 		
 		outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 1, pageContent);
 		
 		// put the row to the output row stream
 		putRow(data.outputRowMeta, outputRow);
-		
-		logBasic("Page URL" + meta.getUrlField());
 
 		// log progress if it is time to to so
 		if (checkFeedback(getLinesRead())) {
