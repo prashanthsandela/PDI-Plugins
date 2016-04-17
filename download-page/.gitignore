@@ -2,3 +2,9 @@
 /bin/
 /dist/
 /lib/
+/build/
+/build-res/
+.classpath
+.gitignore
+.project
+.settings/
