@@ -76,7 +76,7 @@ import org.w3c.dom.Node;
 		i18nPackageName="org.pentaho.di.sdk.plugin.steps.pagedownload",
 		name="PageDownloadStep.Name",
 		description = "PageDownloadStep.TooltipDesc",
-		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform"
+		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Web"
 )
 public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterface {
 
