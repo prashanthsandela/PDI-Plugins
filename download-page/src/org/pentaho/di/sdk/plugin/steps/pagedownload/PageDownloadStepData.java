@@ -49,6 +49,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class PageDownloadStepData extends BaseStepData implements StepDataInterface {
 
 	public RowMetaInterface outputRowMeta;
+	public RowMetaInterface inputRowMeta;
 	
     public PageDownloadStepData()
 	{

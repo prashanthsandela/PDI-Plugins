@@ -93,6 +93,7 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 	private String outputField = "";
 	private String urlField = "";
 	private boolean getUrlFromPreviousFields = false;
+	private String prevURLField = "";
 
 	/**
 	 * Constructor should call super() to make sure the base class has a chance to initialize properly.
@@ -177,6 +178,14 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 		return getUrlFromPreviousFields;
 	}
 	
+	public void setPrevURLField(String prevURLField) {
+		this.prevURLField = prevURLField;
+	}
+	
+	public String getPrevURLField() {
+		return this.prevURLField;
+	}
+	
 	/**
 	 * This method is used when a step is duplicated in Spoon. It needs to return a deep copy of this
 	 * step meta object. Be sure to create proper deep copies if the step configuration is stored in
@@ -206,6 +215,7 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 		sb.append(XMLHandler.addTagValue("outputfield", outputField) + "\n");
 		sb.append(XMLHandler.addTagValue("pageURL", urlField) + "\n");
 		sb.append(XMLHandler.addTagValue("getUrlFromPreviousFields", getUrlFromPreviousFields) + "\n");
+		sb.append(XMLHandler.addTagValue("prevURLField", prevURLField) + "\n");
 		return sb.toString();
 	}
 
@@ -224,6 +234,7 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 		try {
 			setOutputField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "outputfield")));
 			setUrlField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "pageUrl")));
+			setPrevURLField(XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "prevURLField")));
 			
 			if ( XMLHandler.getNodeValue(XMLHandler.getSubNode(stepnode, "getUrlFromPreviousFields")).equals("Y") ) {
 				setGetUrlFromPreviousFields(true);
@@ -294,6 +305,17 @@ public class PageDownloadStepMeta extends BaseStepMeta implements StepMetaInterf
 		 * This implementation appends the outputField to the row-stream
 		 */
 
+		ValueMetaInterface v1 = new ValueMeta(BaseMessages.getString( PKG, "PageDownload.urlField.Label" ), ValueMeta.TYPE_STRING);
+		
+		// setting trim type to "both"
+		v1.setTrimType(ValueMeta.TRIM_TYPE_BOTH);
+
+		// the name of the step that adds this field
+		v1.setOrigin(name);
+		
+		// modify the row structure and add the field this step generates  
+		inputRowMeta.addValueMeta(v1);
+		
 		// a value meta object contains the meta data for a field
 		ValueMetaInterface v = new ValueMeta(outputField, ValueMeta.TYPE_STRING);
 		

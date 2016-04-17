@@ -53,6 +53,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.LabelComboVar;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -89,7 +90,7 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 	// text field holding the name of the field to add to the row stream
 	private Text outputFieldName;
 	
-	private Text urlFieldName;
+	private LabelTextVar urlFieldName;
 	
 	private Button bUrlInputField;
 	
@@ -152,14 +153,18 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		
 		SelectionListener lsSel = new SelectionListener() {
 			public void widgetSelected(SelectionEvent arg0) {
-				logBasic("Wedget Selected");
 				meta.setChanged();
 				meta.setGetUrlFromPreviousFields(!meta.getGetUrlFromPreviousFields());
+				lcvPreviousColumns.setEnabled(meta.getGetUrlFromPreviousFields());
+				urlFieldName.setEnabled(!meta.getGetUrlFromPreviousFields());
+				
+				if(meta.getGetUrlFromPreviousFields()) {
+					lcvPreviousColumns.setText("");
+				}
 			}
 			
 			public void widgetDefaultSelected(SelectionEvent arg0) {
 				meta.setChanged();
-				logBasic("Wedget Default Selected");
 			}
 		};
 		
@@ -210,24 +215,15 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		props.setLook(outputFieldName);
 		outputFieldName.addModifyListener(lsMod);
 		FormData fdValName = new FormData();
-		fdValName.left = new FormAttachment(middle, 0);
-		fdValName.right = new FormAttachment(100, 0);
+		fdValName.left = new FormAttachment(0, 0);
+		fdValName.right = new FormAttachment(middle, -margin);
 		fdValName.top = new FormAttachment(wStepname, margin);
 		outputFieldName.setLayoutData(fdValName);
 		
 		// URL Field
-		Label urlValName = new Label(shell, SWT.RIGHT);
-		urlValName.setText(BaseMessages.getString(PKG, "PageDownload.urlField.Label")); 
-		props.setLook(urlValName);
-		FormData urlFormDataValName = new FormData();
-		urlFormDataValName.left = new FormAttachment(0, 0);
-		urlFormDataValName.right = new FormAttachment(middle, -margin);
-		urlFormDataValName.top = new FormAttachment(outputFieldName, margin);
-		urlValName.setLayoutData(urlFormDataValName);
-
-		urlFieldName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		urlFieldName = new LabelTextVar( transMeta, shell, BaseMessages.getString( PKG, "PageDownload.urlField.Label" ), "" );
+		urlFieldName.addModifyListener( lsMod );
 		props.setLook(urlFieldName);
-		urlFieldName.addModifyListener(lsMod);
 		FormData urlfdValName = new FormData();
 		urlfdValName.left = new FormAttachment(middle, 0);
 		urlfdValName.right = new FormAttachment(100, 0);
@@ -257,57 +253,24 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 				BaseMessages.getString( PKG, "PageDownloadStep.InputFields.Label" ),
 		        BaseMessages.getString( PKG, "PageDownloadStep.InputFields.Tooltip" ) );
 		props.setLook(lcvPreviousColumns);
-		lcvPreviousColumns.addModifyListener(lsMod);
+		
 		FormData fdbPreviousColumn = new FormData();
 		fdbPreviousColumn.left = new FormAttachment(0, 0);
 		fdbPreviousColumn.right = new FormAttachment(100, 0);
 		fdbPreviousColumn.top = new FormAttachment(bUrlInputField, margin);
 		lcvPreviousColumns.setLayoutData(fdbPreviousColumn);
-		
+		lcvPreviousColumns.addModifyListener(lsMod);
 		lcvPreviousColumns.addFocusListener(new FocusListener() {
-			public void focusLost(FocusEvent arg0) {
-				logBasic("Lost Focus");
-			}
+			public void focusLost(FocusEvent arg0){}
 			public void focusGained(FocusEvent arg0) {
-				logBasic("Gained Focus");
 				getPreviousFields( lcvPreviousColumns );				
 			}
 		});
 		
-		// Checkbox
-//		Label prevStep = new Label(shell, SWT.RIGHT);
-//		prevStep.setText(BaseMessages.getString(PKG, "PageDownloadStep.PrevStep.Label"));
-//		
-//		final Button prevCheckboxStep = new Button( shell, SWT.CHECK | SWT.RIGHT );
-//		prevCheckboxStep.setToolTipText( BaseMessages.getString( PKG, "PageDownloadStep.PrevStep.Tooltip" ) );
-//
-//		final LabelComboVar selectInputField = new LabelComboVar( transMeta, shell,
-//		        BaseMessages.getString( PKG, "PageDownloadStep.InputFields.Label" ),
-//		        BaseMessages.getString( PKG, "PageDownloadStep.InputFields.Tooltip" ) );
-//		selectInputField.getComboWidget().setEditable( true );
-//		props.setLook( selectInputField );
-//		selectInputField.addModifyListener( lsMod );
-//		selectInputField.addFocusListener( new FocusListener() {
-//		public void focusLost( org.eclipse.swt.events.FocusEvent e ) {}
-//
-//		public void focusGained( org.eclipse.swt.events.FocusEvent e ) {
-//			getPreviousFields( selectInputField );
-//		}
-//		});
-//	    getPreviousFields( selectInputField );
-//	    selectInputField.setEnabled( prevCheckboxStep.getSelection() );
-//		
-//		prevCheckboxStep.addSelectionListener(new SelectionListener() {
-//			
-//			public void widgetSelected(SelectionEvent arg0) {
-//				selectInputField.setEnabled(prevCheckboxStep.getSelection());
-//			}
-//			
-//			public void widgetDefaultSelected(SelectionEvent arg0) {
-//				widgetSelected(arg0);
-//			}
-//		});
-		      
+		getPreviousFields( lcvPreviousColumns );
+		lcvPreviousColumns.setEnabled(meta.getGetUrlFromPreviousFields());
+		urlFieldName.setEnabled(!meta.getGetUrlFromPreviousFields());
+		
 		// OK and cancel buttons
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); 
@@ -373,6 +336,9 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		outputFieldName.setText(meta.getOutputField());	
 		urlFieldName.setText(meta.getUrlField());
 		bUrlInputField.setSelection(meta.getGetUrlFromPreviousFields());
+		if(meta.getGetUrlFromPreviousFields()) {
+			lcvPreviousColumns.setText(meta.getPrevURLField());
+		}
 	}
 
 	private void getPreviousFields( LabelComboVar combo ) {
@@ -388,7 +354,6 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 	    if ( this.fieldNames == null ) {
 	      try {
 	        RowMetaInterface r = transMeta.getPrevStepFields( stepname );
-	        logBasic("Get Input Field names: " + Arrays.toString(r.getFieldNames()));
 	        if ( r != null ) {
 	          fieldNames = r.getFieldNames();
 	        }
@@ -399,8 +364,6 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 	        return new String[0];
 	      }
 	    }
-
-	    logBasic("Get Input Field: " + Arrays.toString(this.fieldNames));
 	    return fieldNames;
 	  }
 	
@@ -424,11 +387,11 @@ public class PageDownloadStepDialog extends BaseStepDialog implements StepDialog
 		// The "stepname" variable will be the return value for the open() method. 
 		// Setting to step name from the dialog control
 		stepname = wStepname.getText(); 
+		
 		// Setting the  settings to the meta object
 		meta.setOutputField(outputFieldName.getText());
-		
 		meta.setUrlField(urlFieldName.getText());
-		
+		meta.setPrevURLField(lcvPreviousColumns.isEnabled() ? lcvPreviousColumns.getText() : "");
 		// close the SWT dialog window
 		dispose();
 	}

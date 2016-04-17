@@ -29,8 +29,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -61,6 +63,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class PageDownloadStep extends BaseStep implements StepInterface {
 
+	private static Class<?> PKG = PageDownloadStepMeta.class;
+	
+	private boolean isUrlInputField = false;
+	private int urlFieldIdx = 0;
+	private PageDownloadStepMeta meta = null;
+	private PageDownloadStepData data = null;
+	
 	/**
 	 * The constructor should simply pass on its arguments to the parent class.
 	 * 
@@ -125,51 +134,77 @@ public class PageDownloadStep extends BaseStep implements StepInterface {
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 
 		// safely cast the step settings (meta) and runtime info (data) to specific implementations 
-		PageDownloadStepMeta meta = (PageDownloadStepMeta) smi;
-		PageDownloadStepData data = (PageDownloadStepData) sdi;
+		this.meta = (PageDownloadStepMeta) smi;
+		this.data = (PageDownloadStepData) sdi;
 
 		// get incoming row, getRow() potentially blocks waiting for more rows, returns null if no more rows expected
 		Object[] r = getRow(); 
 		
 		// if no more rows are expected, indicate step is finished and processRow() should not be called again
-				if (r == null){
-					logBasic("Number of incoming rows 0");
-					setOutputDone();
-					return false;
-				} else {
-					logBasic("Number of incoming rows " + r.length);
-				}
+		if (r == null){
+			logBasic("Number of incoming rows 0");
+			setOutputDone();
+			return false;
+		} else {
+			logBasic("Number of incoming rows " + r.length);
+		}
 
-				// the "first" flag is inherited from the base step implementation
-				// it is used to guard some processing tasks, like figuring out field indexes
-				// in the row structure that only need to be done once
-				if (first) {
-					first = false;
-					// clone the input row structure and place it in our data object
-					data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
-					// use meta.getFields() to change it, so it reflects the output row structure 
-					meta.getFields(data.outputRowMeta, getStepname(), null, null, this, null, null);
-				}
-				
-				// Get page content
-				String pageContent = downloadPageContent(meta.getUrlField());
+		if (first) {
+			first = false;
+			setup();
+			initFieldIndexes();
+		}
+		
+		Object[] outputRow;
+		String pageContent = "";
+		if(!meta.getGetUrlFromPreviousFields()) {
+			pageContent = downloadPageContent(meta.getUrlField());
+			outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 2, meta.getUrlField());
+		} else {
+			pageContent = downloadPageContent(r[urlFieldIdx].toString());
+			outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 2, r[urlFieldIdx].toString());
+		}
+		
+		outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 1, pageContent);
+		
+		// put the row to the output row stream
+		putRow(data.outputRowMeta, outputRow);
+		
+		logBasic("Page URL" + meta.getUrlField());
 
-				// safely add the string "Hello World!" at the end of the output row
-				// the row array will be resized if necessary 
-				Object[] outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 1, pageContent);
+		// log progress if it is time to to so
+		if (checkFeedback(getLinesRead())) {
+			logBasic("Linenr " + getLinesRead()); // Some basic logging
+		}
 
-				// put the row to the output row stream
-				putRow(data.outputRowMeta, outputRow); 
-				logBasic("Page URL" + meta.getUrlField());
-
-				// log progress if it is time to to so
-				if (checkFeedback(getLinesRead())) {
-					logBasic("Linenr " + getLinesRead()); // Some basic logging
-				}
-
-				// indicate that processRow() should be called again
-				return true;
+		// indicate that processRow() should be called again
+		return true;
 	}
+	
+	private void setup() {
+		// clone the input row structure and place it in our data object
+		data.outputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+		data.inputRowMeta = (RowMetaInterface) getInputRowMeta().clone();
+		// use meta.getFields() to change it, so it reflects the output row structure 
+		try {
+			meta.getFields(data.outputRowMeta, getStepname(), null, null, this, null, null);
+		} catch (KettleStepException e) {
+			e.printStackTrace();
+		}
+	
+		
+	}
+
+	private void initFieldIndexes() throws KettleStepException {
+	    if ( isUrlInputField ) {
+	      Integer idx = getFieldIdx( data.inputRowMeta, environmentSubstitute( meta.getPrevURLField() ) );
+	      if ( idx != null ) {
+	    	  urlFieldIdx = idx.intValue();
+	      } else {
+	        throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulk.Error.NoJsonField" ) );
+	      }
+	    }
+	  }
 
 	/**
 	 * This method is called by PDI once the step is done processing. 
@@ -192,6 +227,21 @@ public class PageDownloadStep extends BaseStep implements StepInterface {
 		PageDownloadStepData data = (PageDownloadStepData) sdi;
 		
 		super.dispose(meta, data);
+	}
+	
+	// This method get field ID
+	private static Integer getFieldIdx(RowMetaInterface rowMeta, String fieldName) {
+		if (fieldName == null) {
+			return null;
+		}
+
+		for (int i = 0; i < rowMeta.size(); i++) {
+			String name = rowMeta.getValueMeta(i).getName();
+			if (fieldName.equals(name)) {
+				return i;
+			}
+		}
+		return null;
 	}
 
 	/**
