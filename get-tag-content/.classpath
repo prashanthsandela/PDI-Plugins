@@ -12,5 +12,26 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=get-tag-content&amp;ivyXmlPath=ivy.xml&amp;confs=*&amp;ivySettingsPath=ivysettings.xml&amp;loadSettingsOnDemand=false&amp;ivyUserDir=&amp;propertyFiles="/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/prash/.m2/repository/org/jsoup/jsoup/1.9.2/jsoup-1.9.2.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="maven.groupId" value="org.jsoup"/>
+			<attribute name="maven.artifactId" value="jsoup"/>
+			<attribute name="maven.version" value="1.9.2"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
