@@ -1,3 +1,11 @@
 /.project
 /.settings/
-/.gitignore/
+/*/target/
+/*/lib/
+/*/bin/
+/*/test-lib/
+/*/dist/
+/*/.classpath
+/*/.gitignore
+/*/.settings
+/*/.project

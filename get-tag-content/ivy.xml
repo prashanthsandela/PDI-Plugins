@@ -8,7 +8,7 @@
     <conf name="source"/> 
   </configurations>
  
-  <dependencies defaultconf="default"> 
+  <dependencies defaultconf="default">
 
     <!-- kettle dependencies -->
     <dependency org="pentaho-kettle" name="kettle-core" rev="7.0-SNAPSHOT" transitive="false" changing="true"/>
@@ -19,7 +19,7 @@
 
 	<!-- swt dependencies -->
 	<dependency org="org.eclipse.swt" name="swt-win32" rev="3.3.0.3346" transitive="false" changing="false"/>
-	
+	 
     <!-- testing dependencies -->
     <dependency org="junit" name="junit" rev="3.8.1" transitive="false" conf="test->default"/>
     <dependency org="log4j" name="log4j" rev="1.2.16" transitive="false" conf="test->default"/>
