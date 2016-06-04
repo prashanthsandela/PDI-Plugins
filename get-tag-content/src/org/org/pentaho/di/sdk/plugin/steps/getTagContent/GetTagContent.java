@@ -168,7 +168,8 @@ public class GetTagContent extends BaseStep implements StepInterface {
 			initFieldIndexes();
 		}
 
-		String content = parseHTML(r[pageContentFieldId].toString(), meta.getXpath(), meta.getTextOnly());
+		String content = new UrlParser().getTagData(r[pageContentFieldId].toString(), meta.getXpath(), meta.getTextOnly());
+		logBasic("Content :" + content);
 		Object[] outputRow = RowDataUtil.addValueData(r, data.outputRowMeta.size() - 1, content);
 
 		// put the row to the output row stream
@@ -234,17 +235,6 @@ public class GetTagContent extends BaseStep implements StepInterface {
 		GetTagContentData data = (GetTagContentData) sdi;
 
 		super.dispose(meta, data);
-	}
-	
-	public String parseHTML(String htmlData, String requiredTag, boolean textOnly) {
-		Document doc = Jsoup.parse(htmlData);
-		
-		if ( textOnly ) {
-			return doc.select(requiredTag).text();
-		} else {
-			return doc.select(requiredTag).toString();
-		}
-		
 	}
 
 }
